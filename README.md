@@ -1,2 +1,2 @@
-# Python
-Python code developed over the years.
+# Publications
+Python code used in publications.
