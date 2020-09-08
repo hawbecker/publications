@@ -1,0 +1,35 @@
+case_dict = {'GFSR_YSU_CHRN_GFS_NOSK_3DOM':{'d03':{'color':'green',           'name':'FNL',         'marker':'$\u2665$',     'fill':True}},
+             'GFSR_YSU_CHRN_GFS_SKNT_3DOM':{'d03':{'color':'olivedrab',       'name':'FNL-SKIN',    'marker':'$\clubsuit$',  'fill':True}},
+             'GFSR_YSU_CHRN_GHR_NOSK_3DOM':{'d03':{'color':'yellowgreen',     'name':'FNL-GHR',     'marker':'$\spadesuit$', 'fill':True}},
+             'GFSR_YSU_CHRN_GHR_SKNT_3DOM':{'d03':{'color':'greenyellow',     'name':'FNLGHR-SKIN', 'marker':'$\u2666$',     'fill':True}},
+             'GFSR_YSU_CHRN_MOD_NOSK_3DOM':{'d03':{'color':'darkolivegreen',  'name':'FNL-MOD',     'marker':'$\u273d$',     'fill':True}},
+             'GFSR_YSU_CHRN_MOD_SKNT_3DOM':{'d03':{'color':'palegreen',       'name':'FNLMOD-SKIN', 'marker':'$\u272a$',     'fill':True}},
+             #'GFSR_YSU_JMNZ_GFS_NOSK_3DOM':{'d03':{'color':'greenyellow',    'name':'GFS-JMNZ',   'marker':'$\u2736$',     'fill':True}},
+             
+             'ERAI_YSU_CHRN_OST_NOSK_4DOM':{'d03':{'color':'blue',        'name':'ERA-I',       'marker':'o',            'fill':True}},
+                                            #'d04':{'color':'darkblue',       'name':'1kmYSU',     'marker':'v',            'fill':True}},
+             #'ERAI_3DP_CHRN_OST_NOSK_3DOM':{'d03':{'color':'blue',           'name':'3km3DPBL',   'marker':'P',            'fill':True}},
+             #'ERAI_3DP_CHRN_OST_NOSK_4DOM':{'d04':{'color':'cornflowerblue', 'name':'1km3DPBL',   'marker':'^',            'fill':True}},
+             #'ERAI_MYN_CHRN_OST_NOSK_3DOM':{'d03':{'color':'mediumvioletred','name':'MYNN2.5',    'marker':'X',            'fill':True}},
+             #'ERAI_YSU_JMNZ_OST_NOSK_3DOM':{'d03':{'color':'orange',         'name':'Jiménez',    'marker':'>',            'fill':True}},
+             'ERAI_YSU_CHRN_OST_SKNT_3DOM':{'d03':{'color':'cornflowerblue',  'name':'ERAI-SKIN',   'marker':'<',            'fill':True}},
+             'ERAI_YSU_CHRN_GHR_NOSK_3DOM':{'d03':{'color':'teal',            'name':'ERAI-GHR',    'marker':'$\u29d7$',     'fill':True}},
+             'ERAI_YSU_CHRN_GHR_SKNT_3DOM':{'d03':{'color':'lightseagreen',   'name':'ERAIGHR-SKIN','marker':'$\u29d3$',     'fill':True}},
+             #'ERAI_YSU_CHRN_OST_OCEA_3DOM':{'d03':{'color':'blue',           'name':'OST-OML',    'marker':'v',            'fill':True}},
+             #'ERAI_YSU_CHRN_GHR_OCEA_3DOM':{'d03':{'color':'cornflowerblue', 'name':'GHR-OML',    'marker':'^',            'fill':True}},
+             'ERAI_YSU_CHRN_MOD_NOSK_3DOM':{'d03':{'color':'darkblue',        'name':'ERAI-MOD',    'marker':'X',           'fill':True}},
+             'ERAI_YSU_CHRN_MOD_SKNT_3DOM':{'d03':{'color':'slateblue',       'name':'ERAIMOD-SKIN','marker':'P',            'fill':True}},
+             'ERAI_YSU_CHRN_OST_OVER_3DOM':{'d03':{'color':'blueviolet',      'name':'ERAI-REPL',   'marker':'v',            'fill':True}},
+             'ERAI_YSU_CHRN_OST_OVSK_3DOM':{'d03':{'color':'violet',      'name':'EI-REPSKN',   'marker':'^',            'fill':True}},
+             
+             #'ERAI_YSU_CHRN_MOD_OCEA_3DOM':{'d03':{'color':'mediumvioletred',     'name':'MOD-OML',    'marker':'X',            'fill':True}},
+             #'ERAI_YSU_CHRN_OST_REVT_3DOM':{'d03':{'color':'mediumvioletred','name':'Rev-SKT',    'marker':'o',            'fill':True}},
+             
+             
+             'ERA5_YSU_CHRN_ER5_NOSK_3DOM':{'d03':{'color':'r',               'name':'ERA5',        'marker':'p',            'fill':True}},
+             'ERA5_YSU_CHRN_ER5_SKNT_3DOM':{'d03':{'color':'lightcoral',      'name':'ERA5-SKIN',   'marker':'D',            'fill':True}},
+             'ERA5_YSU_CHRN_ER5_OVER_3DOM':{'d03':{'color':'darkred',         'name':'ERA5-REPL',   'marker':'s',            'fill':True}},
+             'ERA5_YSU_CHRN_ER5_OVSK_3DOM':{'d03':{'color':'coral',           'name':'E5-REPSKN',   'marker':'$\u2b23$',     'fill':True}},
+             #'ERA5_YSU_JMNZ_ER5_NOSK_3DOM':{'d03':{'color':'deeppink',       'name':'ERA5-JMNZ',  'marker':'$\u2689$',     'fill':True}},
+             }
+         
