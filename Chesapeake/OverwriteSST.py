@@ -1,8 +1,5 @@
-import netCDF4 as nc
 from netCDF4 import Dataset as ncdf
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import Normalize
 from datetime import datetime,timedelta
 import glob
 import shutil
@@ -11,33 +8,35 @@ import pandas as pd
 
 
 # -------------------------------------------------------------------------------- #
-#fdir = '/glade/scratch/hawbecke/WRF/ATEC/Chesapeake/SENSITIVITY_STUDY/'
-fdir = '/glade/work/hawbecke/MMC/FINO/'
-#fdir = '/glade/work/hawbecke/ATEC/Chesapeake/SENSITIVITY_STUDY/'
-reanalysis = 'ERA5'
-#met_dir = '{}20190716to20190801/met_em/{}/orig/'.format(fdir,reanalysis)
-met_dir = '{}met_em/{}/orig/'.format(fdir,reanalysis)
-
 smoothed = False
+reanalysis = 'ERAI'
 #new_data = 'GHRSST' 
 #new_data = 'MODIS'
-new_data = 'OVERWRITE'
-#if reanalysis == 'ERA5': new_data = 'OVERWRITE'
+#new_data = 'OVERWRITE'
+new_data = 'FILL'
 
-#new_dir = '{}20190716to20190801/met_em/{}/{}/'.format(fdir,reanalysis,new_data)
-new_dir = '{}met_em/{}/{}/'.format(fdir,reanalysis,new_data)
+# Base directory where everything is stored:
+fdir = '/glade/work/hawbecke/ATEC/Chesapeake/SENSITIVITY_STUDY/'
+# Location of met_em files:
+met_dir = '{}20190716to20190801/met_em/{}/orig/'.format(fdir,reanalysis)
+# Location of where you want to save new met_em files:
+new_dir = '{}20190716to20190801/met_em/{}/{}/'.format(fdir,reanalysis,new_data)
+# Location of SST data to be included in new met_em files:
 sst_dir = '{}{}/'.format(fdir,new_data)
+
+# FINO
+#fdir = '/glade/work/hawbecke/MMC/FINO/'
+#met_dir = '{}met_em/{}/orig/'.format(fdir,reanalysis)
+#new_dir = '{}met_em/{}/{}/'.format(fdir,reanalysis,new_data)
+
 # -------------------------------------------------------------------------------- #
 # -------------------------------------------------------------------------------- #
 
 ghr_valid = 9  # GHRSST is valid at 09 Z
 mod_valid = 12 # Assuming it is valid at 12 Z for interpolation purposes...
 
-
 met_list = sorted(glob.glob('{0}met_em.d0*'.format(met_dir)))
 
-print(met_list)
-wefwef
 def fill_new_sst(orig_sst,orig_lat,orig_lon,orig_mask,
                  new_sst,new_lat,new_lon,window=None):
     '''
@@ -95,17 +94,16 @@ def fill_new_sst(orig_sst,orig_lat,orig_lon,orig_mask,
     return(sst.data)
 
 
-
 for met_file in met_list:
     if smoothed:
         smooth_str = 'smooth'
     else:
         smooth_str = 'raw'
-
-    if reanalysis == 'ERA5':
-        new_file = '{}{}'.format(new_dir,met_file.split('/')[-1])
-    else:
+ 
+    if (new_data != 'OVERWRITE') and (new_data != 'FILL'):
         new_file = '{}{}/{}'.format(new_dir,smooth_str,met_file.split('/')[-1])
+    else:
+        new_file = '{}{}'.format(new_dir,met_file.split('/')[-1])
     print(new_file)
     if path.exists(new_file):
         print('skipping...')
@@ -121,15 +119,13 @@ for met_file in met_list:
             m_sst = met.variables['SST'][0,:,:]
         m_mask = met.variables['LANDMASK'][0,:,:]
         met_timeb = met.variables['Times'][:].data[0]
-        if reanalysis == 'ERA5': 
-            new_sst = met.variables['SKINTEMP'][0,:,:]
-            new_sst[np.where(m_mask == 1.0)] = new_sst[np.where(m_mask == 1.0)]*0.0
         met_dx = met.DX
         met_dy = met.DY
         met.close()
 
 #        if reanalysis != 'ERA5':
-        if new_data != 'OVERWRITE':
+        #if new_data != 'OVERWRITE':
+        if (new_data != 'OVERWRITE') and (new_data != 'FILL'):
             min_m_lat = np.min(m_lat)
             max_m_lat = np.max(m_lat)
             min_m_lon = np.min(m_lon)
@@ -243,6 +239,22 @@ for met_file in met_list:
             else:
                 new_sst = fill_new_sst(m_sst,m_lat,m_lon,m_mask,n_sst,n_lat_trim,n_lon_trim,
                                     window=int(min([met_dx/new_dx,met_dy/new_dy])/2.0))
+
+        else:
+        #    if reanalysis == 'ERA5': 
+            if new_data == 'OVERWRITE':
+                met = ncdf(met_file,'r')
+                new_sst = met.variables['SKINTEMP'][0,:,:]
+                new_sst[np.where(m_mask == 1.0)] = new_sst[np.where(m_mask == 1.0)]*0.0
+                met.close()
+            elif new_data == 'FILL':
+                met = ncdf(met_file,'r')
+                skin_temp = met.variables['SKINTEMP'][0,:,:]
+                new_sst = m_sst.copy()
+                new_sst[np.isnan(new_sst)] = 0.0
+                new_sst[np.where(new_sst == 0.0)] = skin_temp[np.where(new_sst == 0.0)]
+                new_sst[np.where(m_mask == 1.0)] = new_sst[np.where(m_mask == 1.0)]*0.0
+                met.close()
 
         new_sst[np.isnan(new_sst)] = 0.0
 
