@@ -1,3 +1,4 @@
+#!/glade/u/home/hawbecke/local/envs/mmc/bin/python
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -21,48 +22,58 @@ from string import ascii_lowercase
 import matplotlib.patches as patches
 import skimage.morphology
 import matplotlib.colors
+sys.path.append('/glade/u/home/hawbecke/Code/Python/publications/Chesapeake/')
+from baybreezedict import DetectBayBreeze, spatial_breeze_check, find_onshore_minmax
 sys.path.append('/glade/u/home/hawbecke/Code/Python/')
-from pydicts.baybreezedict import DetectBayBreeze, spatial_breeze_check, find_onshore_minmax
 from pydicts.obsdict import get_FINO_obs
 
-wrf_dir    = '/glade/scratch/hawbecke/WRF/ATEC/Chesapeake/20190716to20190801/'
+wrf_dir    = '/glade/scratch/hawbecke/WRF/ATEC/Chesapeake/20190716to20190801/new_MBDA/'
 #wrf_dir    = '/Users/hawbecke/Research/Chesapeake/Data/WRF/20190716to20190801/'
 
-restarts   = ['CBB_2019071518', 'CBB_2019071718', 'CBB_2019071918', 'CBB_2019072118', 
-              'CBB_2019072318', 'CBB_2019072518', 'CBB_2019072718', 'CBB_2019072918']
+#restarts   = ['CBB_2019071518', 'CBB_2019071718', 'CBB_2019071918', 'CBB_2019072118', 
+#              'CBB_2019072318', 'CBB_2019072518', 'CBB_2019072718', 'CBB_2019072918']
+
+restarts = ['20190715', '20190717', '20190719', '20190721', 
+            '20190723', '20190725', '20190727', '20190729']
 
 wrf_start  = ['2019-07-15 18:00:00','2019-07-17 18:00:00','2019-07-19 18:00:00','2019-07-21 18:00:00',
               '2019-07-23 18:00:00','2019-07-25 18:00:00','2019-07-27 18:00:00','2019-07-29 18:00:00',]
 
 
-from CBB_case_dict import case_dict
+from publications.Chesapeake.CBB_case_dict import case_dict
 cases = list(case_dict.keys())
+cases = cases[:3]
+
+#cases = ['ERA5_YSU_CHRN_ER5_NOSK_3DOM','ERAI_YSU_CHRN_OST_NOSK_4DOM','FNLA_YSU_CHRN_GFS_NOSK_3DOM']
+cases_f = cases.copy()
+#for case in cases_f:
+#    if 'GFSR' in case: cases.remove(case)
+##    if 'ERA5' in case: cases.remove(case)
+#    if 'ERAI' in case: cases.remove(case)
 
 ncases   = len(cases)
 case_dom = [3]*ncases
 
-
 bad_cases  = []
 cases_of_interest = cases.copy()
+
 for cc,case in enumerate(cases_of_interest):
-    numerical_detection_path = '{}/spatial_breeze_detection_CLDnRAIN_d0{}.nc'.format('{}{}/'.format(wrf_dir, case),case_dom[cc])
+    numerical_detection_path = '{}spatial_breeze_detection_CLDnRAIN_d0{}.nc'.format('{}{}/'.format(wrf_dir, case),case_dom[cc])
     if path.exists(numerical_detection_path):
         print('already did ',case)
     else:
-    
-
         init_vars = True
-        wrfout_files = sorted(glob.glob('{}{}/CBB_2019*/wrfout_d0{}*'.format(wrf_dir,case,case_dom[0])))
+        wrfout_files = sorted(glob.glob('{}{}/{}_2019*/wrfout_d0{}*'.format(wrf_dir,case,case.split('_')[0],case_dom[0])))
         if len(wrfout_files) <= 1:
             cases_of_interest.remove(case)
-
             bad_cases.append(case)
+
             
-cases = ['ERA5_YSU_CHRN_ER5_NOSK_3DOM','ERAI_YSU_CHRN_OST_NOSK_4DOM','GFSR_YSU_CHRN_GFS_NOSK_3DOM']
-cases_of_interest = cases.copy()
+#cases = ['ERA5_YSU_CHRN_ER5_NOSK_3DOM','ERAI_YSU_CHRN_OST_NOSK_4DOM','GFSR_YSU_CHRN_GFS_NOSK_3DOM']
 
-
-wrfout_files = sorted(glob.glob('{}{}/{}/wrfout_d0{}*'.format(wrf_dir,cases_of_interest[0],restarts[0],case_dom[0])))
+wrfout_files = sorted(glob.glob('{}{}/{}_{}/wrfout_d0{}*'.format(wrf_dir,cases_of_interest[0],
+                                                                 cases_of_interest[0].split('_')[0],
+                                                                 restarts[0],case_dom[0])))
 
 time_of_interest = '2019-07-16 19:00:00'
 #time_of_interest = '2019-07-16 13:00:00'
@@ -73,7 +84,9 @@ for wrfout_file in wrfout_files:
 
 wrfout = xr.open_dataset(file_of_interest)
 wrfout = np.squeeze(wrfout)
-wrfinput = xr.open_dataset('{}{}/{}/wrfinput_d0{}'.format(wrf_dir,cases_of_interest[0],restarts[0],case_dom[0]))
+wrfinput = xr.open_dataset('{}{}/{}_{}/wrfinput_d0{}'.format(wrf_dir,cases_of_interest[0],
+                                                          cases_of_interest[0].split('_')[0],
+                                                          restarts[0],case_dom[0]))
 
 land_mask  = np.squeeze(wrfinput.LANDMASK)
 hgt        = np.squeeze(wrfinput.HGT)
@@ -214,7 +227,6 @@ else:
     onshore_min_max_ds.to_netcdf(onshore_min_max_path)
     
     
-    
 def convert_breeze_dict_to_xr(breeze_dict):
     for kk,key in enumerate(breeze_dict.keys()):
         if key == 'breeze':
@@ -237,17 +249,8 @@ def convert_breeze_dict_to_xr(breeze_dict):
 
 
 breeze_cmap = plt.cm.RdYlGn(np.linspace(0.1,0.9,3))
-#breeze_cmap = [[0.0, 0.0, 0.0, 1.0]]
-#for ll,lvl in enumerate(np.arange(0,2)):
-#    breeze_cmap = np.append(breeze_cmap,[list(breeze_cmap_f[ll])],axis=0)
-#breeze_cmap = np.append(breeze_cmap,[[1.0, 0.0, 0.0, 1.0]],axis=0)
-#for ll,lvl in enumerate(np.arange(0,3)):
-#    plt.plot(np.arange(0,10),np.arange(0,10)*ll,c=breeze_cmap[ll])
-    
     
 stn_colors = plt.cm.nipy_spectral(np.linspace(0.05,0.95,len(near_shore_stations)))
-#for ss,stn in enumerate(near_shore_stations):    
-#    plt.plot(np.arange(0,10),np.arange(0,10)*ss,c=stn_colors[ss])
 
 stn_dict = {}
 for ss,stn in enumerate(near_shore_stations):
@@ -275,17 +278,34 @@ bad_cases = []
 
 check_clouds = True
 check_rain = True
-print(cases_of_interest,'PSH')
 
-for cc,case in enumerate(cases_of_interest):
-    numerical_detection_path = '{}/spatial_breeze_detection_CLDnRAIN_d0{}.nc'.format('{}{}/'.format(wrf_dir, case),case_dom[0])
+#cases_of_interest = cases[24:]
+#cases_of_interest = ['MUR1K_FILL_SKNT','OSTIA_FILL_SKNT','NCEIA_FILL_SKNT']
+print('Running for these cases: ',cases_of_interest)
+
+for cc,case in enumerate(cases_of_interest[:1]):
+    numerical_detection_path = '{}/spatial_breeze_detection_CLDnRAIN_d0{}_abs.nc'.format('{}{}/'.format(wrf_dir, case),case_dom[0])
     if path.exists(numerical_detection_path):
         print('already did ',case)
     else:
-    
+        wrfout_files = []
+        
+        icbc_str = case.split('_')[0]
+        restarts = sorted(glob.glob('{}{}/{}_*'.format(wrf_dir,case,icbc_str)))
+        for rr,rst in enumerate(restarts):
+            restarts[rr] = rst.split('/')[-1]
+        
+        for rr,rst in enumerate(restarts):
+            rst_files = sorted(glob.glob('{}{}/{}/wrfout_d0{}*'.format(wrf_dir,case,rst,case_dom[0])))
+            if rr == 0: 
+                rst_start = 12
+            else:
+                rst_start = 13
+            wrfout_files += rst_files[rst_start:]
 
         init_vars = True
-        wrfout_files = sorted(glob.glob('{}{}/CBB_2019*/wrfout_d0{}*'.format(wrf_dir,case,case_dom[0])))
+        #wrfout_files = sorted(glob.glob('{}{}/CBB_2019*/wrfout_d0{}*'.format(wrf_dir,case,case_dom[0])))
+
         if len(wrfout_files) > 1:
             for ww,wrfout_file in enumerate(wrfout_files):
                 wrfout = xr.open_dataset(wrfout_file)
@@ -295,7 +315,7 @@ for cc,case in enumerate(cases_of_interest):
                     time_str = date.strftime(pd.to_datetime(wrfout.XTIME.data),'%Y-%m-%d %H:%M')
                     print(time_str)
                     if init_vars:
-                        wrfinput = xr.open_dataset('{}{}/{}/wrfinput_d0{}'.format(wrf_dir,cases[1],restarts[0],case_dom[0]))
+                        wrfinput = xr.open_dataset('{}{}/{}/wrfinput_d0{}'.format(wrf_dir,cases[0],restarts[0],case_dom[0]))
                         land_mask  = np.squeeze(wrfinput.LANDMASK)
                         hgt        = np.squeeze(wrfinput.HGT)
                         water_mask = land_mask.copy().where(land_mask==0.0) + 1.0
@@ -321,8 +341,9 @@ for cc,case in enumerate(cases_of_interest):
                                                      dT_cutoff_pct=50.0,
                                                      check_rain=check_rain,
                                                      rain_da=rain,
+                                                     rain_cutoff=0.25,
                                                      check_clouds=check_clouds,
-                                                     cloud_cutoff=0.7
+                                                     cloud_cutoff=0.6
                                                     )
 
                     
